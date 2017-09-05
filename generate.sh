@@ -8,12 +8,13 @@ KML="out.kml"
 cat gpx-header.txt > $GPX
 cat kml-header.txt > $KML
 
-#for LONGITUDE in `seq 0 0.1 2`; # Whole world
+for LONGITUDE in `seq -180 0.1 179.9`; # Whole world
 #for LONGITUDE in `seq 120 0.1 146`; # Taiwan + Korea + Japan
-for LONGITUDE in `seq 102 0.1 110`; # Vietnam
+#for LONGITUDE in `seq 102 0.1 110`; # Vietnam
 do
 
-  NEXT_LONGITUDE=`echo "x=0.1 + $LONGITUDE; if(x<1) print 0; x" | bc`
+  # Add missing zero to numbers like .7
+  NEXT_LONGITUDE=`echo "x=0.1 + $LONGITUDE; if(x>0 && x<1) print 0; x" | bc`
 
   echo $LONGITUDE
   echo $NEXT_LONGITUDE
@@ -48,8 +49,8 @@ do
   while read ITEM; do
     URL=`echo $ITEM | sed -e "s/^<uri>//" | sed -e "s/<.*//"`
     NAME=`echo $ITEM | sed -e "s/.*<\/uri>\s*<literal[^>]*>\([^<]*\).*/\\1/"`
-    LONGITUDE=`echo $ITEM | sed -e "s/.*Point(\([0-9E.]*\) [-0-9E.]*).*/\\1/"` # E: exponent is sometimes present
-    LATITUDE=`echo $ITEM | sed -e "s/.*Point([0-9E.]* \([-0-9E.]*\)).*/\\1/"`
+    LONGITUDE=`echo $ITEM | sed -e "s/.*Point(\([-0-9E.]*\) [-0-9E.]*).*/\\1/"` # E: exponent is sometimes present
+    LATITUDE=`echo $ITEM | sed -e "s/.*Point([-0-9E.]* \([-0-9E.]*\)).*/\\1/"`
     TYPE=`echo $ITEM | sed -e "s/.*<literal>\([^<]*\)<\/literal>$/\\1/"`
 
     #echo $ITEM
@@ -78,3 +79,10 @@ done
 
 cat gpx-footer.txt >> $GPX
 cat kml-footer.txt >> $KML
+
+# Transform KML to KMZ per https://developers.google.com/kml/documentation/kmzarchives
+rm -rf out
+mkdir out
+cp out.kml out/doc.kml
+zip -r out out
+mv out.zip out.kmz
