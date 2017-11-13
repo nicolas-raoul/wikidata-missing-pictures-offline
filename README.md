@@ -3,7 +3,7 @@
 1. [Download the KMZ file](https://drive.google.com/drive/folders/0B-SI__O0UX9oeHBQQ0JNVkJaQU0?usp=sharing)
 2. Load it into your GPS app (OsmAnd, Maps.me, etc)
 3. Go take pictures of marked places
-4. Upload the pictures to Wikimedia Commons (there is an Android app for this)
+4. Upload the pictures to Wikimedia Commons (there is [an Android app](https://commons-app.github.io) for this)
 
 # ... or generate your own KMZ
 
