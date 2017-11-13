@@ -9,6 +9,6 @@
 
 This `generate.sh` script can generate a KMZ file containing all Wikidata items missing a picture (P18).
 
-Tested on Ubuntu, it might also work on other bash environment such as Linux and MacOS.
+Before running the script, you must clone [database-of-embassies](https://github.com/nicolas-raoul/database-of-embassies) at the same level as wikidata-missing-pictures-offline, as the script uses a tool found in that project. Tested on Ubuntu, it might also work on other bash environment such as Linux and MacOS.
 
 The source code is not complicated, so you can probably figure out how to restrict the data between two longitudes, or set language preferences, if you need to.
