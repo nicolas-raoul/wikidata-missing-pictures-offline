@@ -3,6 +3,12 @@
 # Generate a file containing all geographical Wikidata items that do not have an image (P18 property).
 # Useful for photographers traveling to places with no network.
 
+#FILENAME=world
+#MIN_LONGITUDE=-180
+#MAX_LONGITUDE=179
+#MIN_LATITUDE=-90
+#MAX_LATITUDE=89
+
 #FILENAME=java-bali
 #MIN_LONGITUDE=105.1
 #MAX_LONGITUDE=115.7
@@ -18,19 +24,22 @@ MAX_LATITUDE=31.525632
 ###########################################################
 GPX="$FILENAME.gpx"
 KML="$FILENAME.kml"
+CLASSES="/tmp/classes.txt"
+CLASSES_STATISTICS="classes-statistics.txt"
 cat gpx-header.txt > $GPX
 cat kml-header.txt > $KML
+> $TYPES
 
 INCREMENT=1
 for LONGITUDE in `seq $MIN_LONGITUDE $INCREMENT $MAX_LONGITUDE`;
 do
-  echo "long loop $LONGITUDE"
+  #echo "long loop $LONGITUDE"
   # Add missing zero to numbers like .7
   NEXT_LONGITUDE=`echo "x=$INCREMENT + $LONGITUDE; if(x>0 && x<1) print 0; x" | bc`
 
   for LATITUDE in `seq $MIN_LATITUDE $INCREMENT $MAX_LATITUDE`;
   do
-    echo "lat loop $LATITUDE"
+    #echo "lat loop $LATITUDE"
     # Add missing zero to numbers like .7
     NEXT_LATITUDE=`echo "x=$INCREMENT + $LATITUDE; if(x>0 && x<1) print 0; x" | bc`
 
@@ -68,32 +77,31 @@ do
       ITEM_NAME=`echo $ITEM | sed -e "s/.*<\/uri>\s*<literal[^>]*>\([^<]*\).*/\\1/"`
       ITEM_LONGITUDE=`echo $ITEM | sed -e "s/.*Point(\([-0-9E.]*\) [-0-9E.]*).*/\\1/"` # E: exponent is sometimes present
       ITEM_LATITUDE=`echo $ITEM | sed -e "s/.*Point([-0-9E.]* \([-0-9E.]*\)).*/\\1/"`
-      ITEM_TYPE=`echo $ITEM | sed -e "s/.*<literal>\([^<]*\)<\/literal>$/\\1/"`
+      ITEM_CLASS=`echo $ITEM | sed -e "s/.*<literal>\([^<]*\)<\/literal>$/\\1/"`
 
       #echo $ITEM
       #echo $ITEM_URL
       #echo $ITEM_NAME
       #echo $ITEM_LATITUDE
       #echo $ITEM_LONGITUDE
-      #echo $ITEM_TYPE
+      #echo $ITEM_CLASS
       #echo ""
 
-      if [ ! -z "$ITEM_TYPE" ]
+      if [ ! -z "$ITEM_CLASS" ]
       then
-        ITEM_NAME="$ITEM_NAME ($ITEM_TYPE)"
+        ITEM_NAME="$ITEM_NAME ($ITEM_CLASS)"
+        echo $ITEM_CLASS >> $CLASSES
       fi
       
       echo "<wpt lat='$ITEM_LATITUDE' lon='$ITEM_LONGITUDE'><name>$ITEM_NAME</name><url>$ITEM_URL</url></wpt>" >> $GPX
-      echo "        <Placemark>
-              <name>$ITEM_NAME</name>
-              <description>$ITEM_URL</description>
-              <Point>
-                  <coordinates>$ITEM_LONGITUDE,$ITEM_LATITUDE</coordinates>
-              </Point>
-          </Placemark>" >> $KML
+      echo "<Placemark><name>$ITEM_NAME</name><description>$ITEM_URL</description><Point><coordinates>$ITEM_LONGITUDE,$ITEM_LATITUDE</coordinates></Point></Placemark>" >> $KML
     done < /tmp/items.txt
   done
 done
+
+echo "Removing duplicate lines"
+sort -u $GPX -o $GPX
+sort -u $KML -o $KML
 
 cat gpx-footer.txt >> $GPX
 cat kml-footer.txt >> $KML
@@ -106,3 +114,6 @@ cp $FILENAME.kml $DIRECTORY/doc.kml
 zip -r $DIRECTORY $DIRECTORY
 mv $DIRECTORY.zip $FILENAME.kmz
 rm -rf $DIRECTORY
+
+# Compute class statistics.
+cat $CLASSES | tr "," "\n" | sort | uniq -c | sort -nr > $CLASSES_STATISTICS
