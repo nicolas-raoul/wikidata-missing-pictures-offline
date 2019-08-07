@@ -15,11 +15,29 @@
 #MIN_LATITUDE=-8.9
 #MAX_LATITUDE=-5.8
 
-FILENAME=shanghai
-MIN_LONGITUDE=121.202107
-MAX_LONGITUDE=121.978326
-MIN_LATITUDE=30.760658
-MAX_LATITUDE=31.525632
+#FILENAME=vladivostok
+#MIN_LONGITUDE=130.4
+#MAX_LONGITUDE=136.2
+#MIN_LATITUDE=42.2
+#MAX_LATITUDE=46.1
+
+#FILENAME=maldives
+#MIN_LONGITUDE=71.9
+#MAX_LONGITUDE=74
+#MIN_LATITUDE=-1
+#MAX_LATITUDE=7.4
+
+#FILENAME=takayama
+#MIN_LONGITUDE=136.8
+#MAX_LONGITUDE=137.4
+#MIN_LATITUDE=36.0
+#MAX_LATITUDE=36.4
+
+FILENAME=mokpo
+MIN_LONGITUDE=125
+MAX_LONGITUDE=127
+MIN_LATITUDE=32.8
+MAX_LATITUDE=35.2
 
 ###########################################################
 GPX="$FILENAME.gpx"
@@ -28,7 +46,8 @@ CLASSES="/tmp/classes.txt"
 CLASSES_STATISTICS="classes-statistics.txt"
 cat gpx-header.txt > $GPX
 cat kml-header.txt > $KML
-> $TYPES
+> $CLASSES
+> $CLASSES_STATISTICS
 
 INCREMENT=1
 for LONGITUDE in `seq $MIN_LONGITUDE $INCREMENT $MAX_LONGITUDE`;
@@ -100,6 +119,7 @@ do
 done
 
 echo "Removing duplicate lines"
+#TODO le probleme avec ca c'est que ca trie aussi le header, donc il faudrait d'abord creer les listes de points, les trier, et ensuite concatener avec header/footer
 sort -u $GPX -o $GPX
 sort -u $KML -o $KML
 
@@ -114,6 +134,8 @@ cp $FILENAME.kml $DIRECTORY/doc.kml
 zip -r $DIRECTORY $DIRECTORY
 mv $DIRECTORY.zip $FILENAME.kmz
 rm -rf $DIRECTORY
+
+#TODO executer puis annoncer si resultat KO: xmllint --noout maldives.gpx
 
 # Compute class statistics.
 cat $CLASSES | tr "," "\n" | sort | uniq -c | sort -nr > $CLASSES_STATISTICS
