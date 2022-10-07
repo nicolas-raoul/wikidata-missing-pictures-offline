@@ -33,11 +33,23 @@
 #MIN_LATITUDE=36.0
 #MAX_LATITUDE=36.4
 
-FILENAME=mokpo
-MIN_LONGITUDE=125
-MAX_LONGITUDE=127
-MIN_LATITUDE=32.8
-MAX_LATITUDE=35.2
+#FILENAME=mokpo
+#MIN_LONGITUDE=125
+#MAX_LONGITUDE=127
+#MIN_LATITUDE=32.8
+#MAX_LATITUDE=35.2
+
+#FILENAME=bangkok
+#MIN_LONGITUDE=100.4
+#MAX_LONGITUDE=100.8
+#MIN_LATITUDE=13.6
+#MAX_LATITUDE=13.9
+
+FILENAME=khaoyai
+MIN_LONGITUDE=100.8
+MAX_LONGITUDE=102
+MIN_LATITUDE=14
+MAX_LATITUDE=14.9
 
 ###########################################################
 GPX="$FILENAME.gpx"
@@ -88,7 +100,7 @@ do
 
       OPTIONAL {?item wdt:P31 ?class. ?class rdfs:label ?class_label. FILTER(LANG(?class_label) = \"en\")}
     }
-    GROUP BY ?item" | ../database-of-embassies/tools/query-wikidata.sh \
+    GROUP BY ?item" | ./query-wikidata.sh \
       | grep -i "<literal\|<uri>" | tr "\n" " " | sed -e "s/<uri>/\n<uri>/g" | grep wikidata > /tmp/items.txt
 
     while read ITEM; do
@@ -135,7 +147,8 @@ zip -r $DIRECTORY $DIRECTORY
 mv $DIRECTORY.zip $FILENAME.kmz
 rm -rf $DIRECTORY
 
-#TODO executer puis annoncer si resultat KO: xmllint --noout maldives.gpx
+xmllint --noout $KML
+xmllint --noout $GPX
 
 # Compute class statistics.
 cat $CLASSES | tr "," "\n" | sort | uniq -c | sort -nr > $CLASSES_STATISTICS
