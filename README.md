@@ -2,8 +2,8 @@
 
 1. [Download the KMZ file](https://drive.google.com/drive/folders/0B-SI__O0UX9oeHBQQ0JNVkJaQU0?usp=sharing)
 2. Load it into your GPS app
-  - OsmAnd: Tap the GPX in a file explorer app such as "Amaze", select OsmAnd, choose, "Import as Favorites"
-  - Maps.me: TODO
+  - OsmAnd: Tap the `.kmz` in a file explorer app such as "Amaze", select OsmAnd, the points will show up on the map.
+  - Maps.me: Tap the `.kmz` in a file explorer app such as "Amaze", select Maps.me, the points will show up on the map.
 3. Go take pictures of marked places
 4. Upload the pictures to Wikimedia Commons (there is [an Android app](https://commons-app.github.io) for this)
 
